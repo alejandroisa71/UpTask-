@@ -29,5 +29,8 @@ if (errores.length> 0) {
     nombrePagina: 'Nuevo Proyecto',
     errores
   })
+}else{
+  //no hay errores
+  //Insertar en la BD.
 }
 }
