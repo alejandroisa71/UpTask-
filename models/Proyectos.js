@@ -1,7 +1,6 @@
 const { Sequelize } = require("sequelize");
 const db = require("../config/db");
 const slug = require("slug");
-const short = require("shortid");
 const shortid = require("shortid");
 
 const Proyectos = db.define(
