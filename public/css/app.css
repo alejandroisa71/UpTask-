@@ -97,6 +97,7 @@ body {
 }
 .boton.eliminar {
     margin-top: 1rem;
+    padding: 0 0;
     float: right;
     background-color: red!important;
     color: white;
