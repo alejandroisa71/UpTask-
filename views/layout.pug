@@ -9,7 +9,7 @@ html(lang="es")
         title #{nombrePagina}
     body 
         header.barra
-            h1 UpTask - Administrador de Proyectos
+            h1 UpTask - Administrador de Proyectos #{year}
             a(href="#") Cerrar Sesión 
 
 
@@ -24,10 +24,11 @@ html(lang="es")
                         if(proyectos.length)
                             each proyecto of proyectos
                                 li 
-                                    a(href="#")= proyecto.nombre
+                                    a(href=`/proyectos/${proyecto.url}`)= proyecto.nombre
                         
 
             block contenido
+            //- pre=vardump(proyectos)
                         
                     
                 
