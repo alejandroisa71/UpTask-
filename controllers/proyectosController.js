@@ -47,28 +47,31 @@ exports.nuevoProyecto = async (req, res) => {
 };
 
 exports.proyectoPorUrl = async (req,res,next)=>{
-  const proyectos = await Proyectos.findAll();
+  const proyectosPromise =  Proyectos.findAll();
 
-  const proyecto = await Proyectos.findOne({
-      where: {
-          url: req.params.url
-      }
+  const proyectoPromise=  Proyectos.findOne({
+    where:{
+      url:req.params.url
+    }
   });
+
+  const[proyectos, proyecto] = await Promise.all([proyectosPromise,proyectoPromise])
+
   if(!proyecto) return next();
   
   //render a la vista
   res.render('tareas',{
     nombrePagina:'Tareas del Proyecto',
-    proyecto,
-    proyectos
+    proyectos,
+    proyecto
   })
 }
 
 exports.formularioEditar =async (req,res)=>{
-  const proyectosPromise = await Proyectos.findAll();
+  const proyectosPromise =  Proyectos.findAll();
 
-  const proyectoPromise= Proyectos.findOne({
-    wher:{
+  const proyectoPromise=  Proyectos.findOne({
+    where:{
       id:req.params.id
     }
   });
@@ -77,7 +80,7 @@ exports.formularioEditar =async (req,res)=>{
 
   //render a la vista
   res.render('nuevoProyecto',{
-    nombrePagina: ' Editar Proyecto',
+    nombrePagina: 'Editar Proyecto',
     proyectos,
     proyecto
   })
