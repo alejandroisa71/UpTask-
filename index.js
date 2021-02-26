@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 // })
 
 //habilitar bodyParser para leer los datos del formulario
-app.use(bodyParser.urlencoded({ extend: true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/", routes());
 

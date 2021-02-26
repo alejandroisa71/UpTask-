@@ -14,10 +14,10 @@ block contenido
 
             //- pre= vardump(tareas)
             .listado-pendientes 
-                ul
+                ul 
                   if tareas.length 
                     each tarea in tareas 
-                        li.tarea 
+                        li.tarea(data-tarea=tarea.id) 
                             p= tarea.tarea
                             .acciones
                                 if tarea.estado 
