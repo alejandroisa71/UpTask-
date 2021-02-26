@@ -4,11 +4,10 @@ import axios from "axios";
 const btnEliminar = document.querySelector("#eliminar-proyecto");
 
 if (btnEliminar) {
-  btnEliminar.addEventListener("click", e => {
+  btnEliminar.addEventListener("click", (e) => {
     const urlProyecto = e.target.dataset.proyectoUrl;
 
     // console.log(urlProyecto);
-
 
     Swal.fire({
       title: "Deseas borrar este Proyecto?",
@@ -20,32 +19,31 @@ if (btnEliminar) {
       confirmButtonText: "Si, Borrar",
       cancelButtonText: "No, Cancelar",
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result.value) {
         // enviar peticion a axios
-        const url =`${location.origin}/proyectos/${urlProyecto}`;
+        const url = `${location.origin}/proyectos/${urlProyecto}`;
 
-        axios.delete(url, {params: urlProyecto})
-          .then(function(respuesta){
-              console.log(respuesta);
+        axios
+          .delete(url, { params: { urlProyecto } })
+          .then(function (respuesta) {
+            console.log(respuesta);
+            Swal.fire("Proyecto Eliminado", respuesta.data, "success");
+
+            //redireccionar al inicio
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 3000);
+          })
+          .catch(() => {
+            Swal.fire({
+              type: "error",
+              title: "Hubo un error",
+              text: "No se pudo eliminar el Proyecto",
+            });
           });
-
-          return;
-
-        
-        Swal.fire(
-          "Proyecto Eliminado ",
-          "El Proyecto se ha eliminado.",
-          "success"
-        );
-  
-        //redireccionar al inicio
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 3000);
       }
     });
   });
-  
 }
 
 export default btnEliminar;

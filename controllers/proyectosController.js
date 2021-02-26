@@ -9,11 +9,11 @@ exports.proyectosHome = async (req, res) => {
   });
 };
 
-exports.formularioProyecto =async (req, res) => {
+exports.formularioProyecto = async (req, res) => {
   const proyectos = await Proyectos.findAll();
   res.render("nuevoProyecto", {
     nombrePagina: "Nuevo Proyecto",
-    proyectos
+    proyectos,
   });
 };
 
@@ -36,56 +36,61 @@ exports.nuevoProyecto = async (req, res) => {
     res.render("nuevoProyecto", {
       nombrePagina: "Nuevo Proyecto",
       errores,
-      proyectos
+      proyectos,
     });
   } else {
     //no hay errores
     //Insertar en la BD.
-   await Proyectos.create({ nombre });
+    await Proyectos.create({ nombre });
     res.redirect("/");
   }
 };
 
-exports.proyectoPorUrl = async (req,res,next)=>{
-  const proyectosPromise =  Proyectos.findAll();
+exports.proyectoPorUrl = async (req, res, next) => {
+  const proyectosPromise = Proyectos.findAll();
 
-  const proyectoPromise=  Proyectos.findOne({
-    where:{
-      url:req.params.url
-    }
+  const proyectoPromise = Proyectos.findOne({
+    where: {
+      url: req.params.url,
+    },
   });
 
-  const[proyectos, proyecto] = await Promise.all([proyectosPromise,proyectoPromise])
+  const [proyectos, proyecto] = await Promise.all([
+    proyectosPromise,
+    proyectoPromise,
+  ]);
 
-  if(!proyecto) return next();
-  
-  //render a la vista
-  res.render('tareas',{
-    nombrePagina:'Tareas del Proyecto',
-    proyectos,
-    proyecto
-  })
-}
-
-exports.formularioEditar =async (req,res)=>{
-  const proyectosPromise =  Proyectos.findAll();
-
-  const proyectoPromise=  Proyectos.findOne({
-    where:{
-      id:req.params.id
-    }
-  });
-
-  const[proyectos, proyecto] = await Promise.all([proyectosPromise,proyectoPromise])
+  if (!proyecto) return next();
 
   //render a la vista
-  res.render('nuevoProyecto',{
-    nombrePagina: 'Editar Proyecto',
+  res.render("tareas", {
+    nombrePagina: "Tareas del Proyecto",
     proyectos,
-    proyecto
+    proyecto,
   });
-}
+};
 
+exports.formularioEditar = async (req, res) => {
+  const proyectosPromise = Proyectos.findAll();
+
+  const proyectoPromise = Proyectos.findOne({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  const [proyectos, proyecto] = await Promise.all([
+    proyectosPromise,
+    proyectoPromise,
+  ]);
+
+  //render a la vista
+  res.render("nuevoProyecto", {
+    nombrePagina: "Editar Proyecto",
+    proyectos,
+    proyecto,
+  });
+};
 
 exports.actualizarProyecto = async (req, res) => {
   const proyectos = await Proyectos.findAll();
@@ -106,15 +111,29 @@ exports.actualizarProyecto = async (req, res) => {
     res.render("nuevoProyecto", {
       nombrePagina: "Nuevo Proyecto",
       errores,
-      proyectos
+      proyectos,
     });
   } else {
     //no hay errores
     //Insertar en la BD.
     await Proyectos.update(
       { nombre: nombre },
-      { where: {id: req.params.id}}
-      );
+      { where: { id: req.params.id } }
+    );
     res.redirect("/");
   }
+};
+
+exports.eliminarProyecto = async (req, res, next) => {
+  //req, se puede usar query o params
+  //console.log(req.query);
+  const { urlProyecto } = req.query;
+
+  const resultado = await Proyectos.destroy({ where: { url: urlProyecto } });
+
+  if (!resultado) {
+    return next();
+  }
+
+  res.status(200).send("Proyecto Eliminado Correctamente");
 };
