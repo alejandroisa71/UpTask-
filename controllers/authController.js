@@ -1,6 +1,7 @@
 const passport = require("passport");
-
 const Usuarios = require("../models/Usuarios");
+
+const crypto = require("crypto");
 
 //aqui se pone la estrategia por ejemplo: local, email, facebook
 exports.autenticarUsuario = passport.authenticate("local", {
@@ -29,7 +30,7 @@ exports.cerrarSesion = (req, res) => {
 };
 
 //genera un token si el Usuario es valido
-exports.enviarToken = async (req, res, next) => {
+exports.enviarToken = async (req, res) => {
   //verificar que el usuario existe
   const { email } = req.body;
   const usuario = await Usuarios.findOne({ where: { email } });
@@ -37,9 +38,21 @@ exports.enviarToken = async (req, res, next) => {
   //si no existe el usuario
   if (!usuario) {
     req.flash("error", "No existe esa Cuenta");
-    res.render("reestablecer", {
-      nombrePagina: "Reestablecer tu Contraseña",
-      mensajes: req.flash(),
-    });
+    res.redirect("/reestablecer");
   }
+
+  //usuario existe
+  usuario.token = crypto.randomBytes(20).toString("hex");
+  usuario.expiracion = Date.now() + 3600000;
+
+  //guardarlos en la BD
+  await usuario.save();
+
+  //  url de reset
+  const resetUrl = `http://${req.headers.host}/reestablecer/${usuario.token}`;
+  console.log(resetUrl);
+};
+
+exports.resetPassword = async (req, res) => {
+  res.json(req.params.token);
 };
