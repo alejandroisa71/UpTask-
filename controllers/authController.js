@@ -1,7 +1,9 @@
 const passport = require("passport");
 const Usuarios = require("../models/Usuarios");
-
+const Sequelize= require('sequelize')
+const  Op  = Sequelize.Op
 const crypto = require("crypto");
+//const { Sequelize } = require("sequelize/types");
 
 //aqui se pone la estrategia por ejemplo: local, email, facebook
 exports.autenticarUsuario = passport.authenticate("local", {
@@ -53,6 +55,37 @@ exports.enviarToken = async (req, res) => {
   console.log(resetUrl);
 };
 
-exports.resetPassword = async (req, res) => {
-  res.json(req.params.token);
+exports.validarToken = async (req, res) => {
+  const usuario = await Usuarios.findOne({
+    where:{
+      token: req.params.token
+    }
+  })
+  
+  //si no encuentra el usuario
+  if(!usuario){
+    req.flash('error','No Válido');
+    res.redirect('reestablecer');
+  }
+
+  //Formulario par generar el password 
+  res.render('resetPassword',{
+    nombrePagina: 'Reestablecer Contraseña'
+  })
+
 };
+
+//cambia el password por uno
+exports.actualizarPassword = async(req,res) => { 
+  const usuario = await Usuarios.findOne({
+    where:{
+      token: req.params.token,
+      expiracion:{
+        [Op.gte]: Date.now()
+      } 
+    }
+  });
+  //verificamos si el usuario existe
+  console.log(usuario);
+
+} 
