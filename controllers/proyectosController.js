@@ -2,6 +2,8 @@ const Proyectos = require("../models/Proyectos");
 const Tareas = require("../models/Tareas");
 
 exports.proyectosHome = async (req, res) => {
+  console.log(res.locals.usuario);
+
   const proyectos = await Proyectos.findAll();
 
   res.render("index", {
@@ -42,7 +44,8 @@ exports.nuevoProyecto = async (req, res) => {
   } else {
     //no hay errores
     //Insertar en la BD.
-    await Proyectos.create({ nombre });
+    const usuarioId = res.locals.usuario.id;
+    await Proyectos.create({ nombre, usuarioId });
     res.redirect("/");
   }
 };
