@@ -50,6 +50,11 @@ const Usuarios = db.define(
   }
 );
 
-Usuarios.hasMany(Proyectos);
+//Metodos personalizados
+Usuarios.prototype.verificarPassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
+
+//Usuarios.hasMany(Proyectos);
 
 module.exports = Usuarios;
