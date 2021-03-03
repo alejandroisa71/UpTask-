@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
 const juice = require("juice");
-const htmlToText = require("html-to-text");
+const { htmlToText } = require("html-to-text");
 const util = require("util");
 const emailConfig = require("../config/email");
 
@@ -15,19 +15,24 @@ let transport = nodemailer.createTransport({
 });
 
 //generar HTML
-const generarHTML = () => {
+const generarHTML = (archivo, opciones = {}) => {
   const html = pug.renderFile(
-    `${__dirname}/../views/emails/reestablecer-password.pug`
+    `${__dirname}/../views/emails/${archivo}.pug`,
+    opciones
   );
   return juice(html);
 };
+exports.enviar = async (opciones) => {
+  const html = generarHTML(opciones.archivo, opciones);
+  const text = htmlToText(html);
+  let opcionesEmail = transport.sendMail({
+    from: "UpTask <no-reply@uptask.com>",
+    to: opciones.usuario.email,
+    subject: opciones.subject,
+    text,
+    html,
+  });
 
-let mailOptions = transport.sendMail({
-  from: "UpTask <no-reply@uptask.com>",
-  to: "aguilares@gmail.com",
-  subject: "Password Reset",
-  text: "Hola",
-  html: generarHTML(),
-});
-
-transport.sendMail(mailOptions);
+  const enviarEmail = util.promisify(transport.sendMail, transport);
+  return enviarEmail.call(transport, opcionesEmail);
+};

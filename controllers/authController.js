@@ -4,6 +4,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const crypto = require("crypto");
 const bcrypt = require("bcrypt-nodejs");
+const enviarEmail = require("../handlers/email");
 
 //autenticar usuario - aqui se pone la estrategia por ejemplo: local, email, facebook
 exports.autenticarUsuario = passport.authenticate("local", {
@@ -52,7 +53,14 @@ exports.enviarToken = async (req, res) => {
 
   //  url de reset
   const resetUrl = `http://${req.headers.host}/reestablecer/${usuario.token}`;
-  console.log(resetUrl);
+
+  //Enviar el Correo con el Token
+  await enviarEmail.enviar({
+    usuario,
+    subject: "Password Reset",
+    resetUrl,
+    archivo: "reestablecer-password",
+  });
 };
 
 exports.validarToken = async (req, res) => {
@@ -89,10 +97,8 @@ exports.actualizarPassword = async (req, res) => {
   if (!usuario) {
     req.flash("error", "No Válido");
     res.redirect("reetablecer");
-    console.log("no pasa");
   }
   //hashear el nuevo password
-  console.log("pasa");
   usuario.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
   usuario.token = null;
   usuario.expiracion = null;
