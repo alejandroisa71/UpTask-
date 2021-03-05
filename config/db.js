@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+
 //extraer valores de variables.env
 require("dotenv").config({ path: "variables.env" });
 
